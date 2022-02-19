@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "am.adrian.grpcdemo2.model";
+
+// Balance in USD.
+message Balance {
+  int32 amount = 1;
+}
+
+message Money {
+  int32 amount = 1;
+}
+
+message BalanceCheckRequest {
+  string account_number = 1;
+}
+
+message WithdrawRequest {
+  string account_number = 1;
+  int32 amount = 2;
+}
+
+service BankService {
+  // unary
+  rpc getBalance(BalanceCheckRequest) returns (Balance);
+
+  // server-side streaming
+  rpc withdraw(WithdrawRequest) returns (stream Money);
+}
