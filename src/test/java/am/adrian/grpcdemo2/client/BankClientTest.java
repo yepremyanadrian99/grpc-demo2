@@ -1,5 +1,6 @@
 package am.adrian.grpcdemo2.client;
 
+import am.adrian.grpcdemo2.client.responseobserver.MoneyResponseObserver;
 import am.adrian.grpcdemo2.model.Balance;
 import am.adrian.grpcdemo2.model.BalanceCheckRequest;
 import am.adrian.grpcdemo2.model.BankServiceGrpc;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.LongAccumulator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,12 +23,16 @@ public class BankClientTest {
 
     private BankServiceGrpc.BankServiceBlockingStub blockingStub;
 
+    private BankServiceGrpc.BankServiceStub asyncBlockingStub;
+
     @BeforeAll
+
     public void setup() {
         ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost", 8080)
                 .usePlaintext()
                 .build();
         this.blockingStub = BankServiceGrpc.newBlockingStub(managedChannel);
+        this.asyncBlockingStub = BankServiceGrpc.newStub(managedChannel);
     }
 
     @Test
@@ -67,5 +73,23 @@ public class BankClientTest {
 
         int balanceAfterWithdrawal = blockingStub.getBalance(balanceCheckRequest).getAmount();
         assertEquals(balanceAfterWithdrawal, initialBalance - amountToBeWithdrawn);
+    }
+
+    @Test
+    public void withdrawAsyncTest() {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        final String accountNumber = "8";
+        final int amountToBeWithdrawn = 145;
+        WithdrawRequest withdrawRequest = WithdrawRequest.newBuilder()
+                .setAccountNumber(accountNumber)
+                .setAmount(amountToBeWithdrawn)
+                .build();
+        asyncBlockingStub.withdraw(withdrawRequest, new MoneyResponseObserver(countDownLatch));
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
     }
 }
