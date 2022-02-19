@@ -1,4 +1,4 @@
-package am.adrian.grpcdemo2.client.responseobserver;
+package am.adrian.grpcdemo2.client.streamobserver;
 
 import am.adrian.grpcdemo2.model.Money;
 import io.grpc.stub.StreamObserver;

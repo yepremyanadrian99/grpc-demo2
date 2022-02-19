@@ -3,9 +3,11 @@ package am.adrian.grpcdemo2.server.service;
 import am.adrian.grpcdemo2.model.Balance;
 import am.adrian.grpcdemo2.model.BalanceCheckRequest;
 import am.adrian.grpcdemo2.model.BankServiceGrpc;
+import am.adrian.grpcdemo2.model.DepositRequest;
 import am.adrian.grpcdemo2.model.Money;
 import am.adrian.grpcdemo2.model.WithdrawRequest;
 import am.adrian.grpcdemo2.server.database.AccountDatabase;
+import am.adrian.grpcdemo2.server.streamobserver.DepositRequestObserver;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +60,11 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
             withdrawMoneyAndSendResponse(responseObserver, accountNumber, remainder);
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<DepositRequest> deposit(StreamObserver<Balance> responseObserver) {
+        return new DepositRequestObserver(database, responseObserver);
     }
 
     private void withdrawMoneyAndSendResponse(StreamObserver<Money> responseObserver,

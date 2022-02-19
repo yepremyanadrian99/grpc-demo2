@@ -1,13 +1,16 @@
 package am.adrian.grpcdemo2.client;
 
-import am.adrian.grpcdemo2.client.responseobserver.MoneyResponseObserver;
+import am.adrian.grpcdemo2.client.streamobserver.BalanceStreamObserver;
+import am.adrian.grpcdemo2.client.streamobserver.MoneyResponseObserver;
 import am.adrian.grpcdemo2.model.Balance;
 import am.adrian.grpcdemo2.model.BalanceCheckRequest;
 import am.adrian.grpcdemo2.model.BankServiceGrpc;
+import am.adrian.grpcdemo2.model.DepositRequest;
 import am.adrian.grpcdemo2.model.Money;
 import am.adrian.grpcdemo2.model.WithdrawRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -91,5 +94,26 @@ public class BankClientTest {
             e.printStackTrace();
         }
 //        Uninterruptibles.sleepUninterruptibly(3, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void depositStreamTest() {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        StreamObserver<DepositRequest> depositStreamObserver = asyncBlockingStub.deposit(
+                new BalanceStreamObserver(countDownLatch)
+        );
+        for (int i = 0; i < 100; ++i) {
+            DepositRequest depositRequest = DepositRequest.newBuilder()
+                    .setAccountNumber("1")
+                    .setAmount(100)
+                    .build();
+            depositStreamObserver.onNext(depositRequest);
+        }
+        depositStreamObserver.onCompleted();
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
