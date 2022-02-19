@@ -1,6 +1,6 @@
 package am.adrian.grpcdemo2.client;
 
-import am.adrian.grpcdemo2.client.streamobserver.BalanceStreamObserver;
+import am.adrian.grpcdemo2.client.streamobserver.BalanceResponseObserver;
 import am.adrian.grpcdemo2.client.streamobserver.MoneyResponseObserver;
 import am.adrian.grpcdemo2.model.Balance;
 import am.adrian.grpcdemo2.model.BalanceCheckRequest;
@@ -26,16 +26,15 @@ public class BankClientTest {
 
     private BankServiceGrpc.BankServiceBlockingStub blockingStub;
 
-    private BankServiceGrpc.BankServiceStub asyncBlockingStub;
+    private BankServiceGrpc.BankServiceStub asyncStub;
 
     @BeforeAll
-
     public void setup() {
         ManagedChannel managedChannel = ManagedChannelBuilder.forAddress("localhost", 8080)
                 .usePlaintext()
                 .build();
         this.blockingStub = BankServiceGrpc.newBlockingStub(managedChannel);
-        this.asyncBlockingStub = BankServiceGrpc.newStub(managedChannel);
+        this.asyncStub = BankServiceGrpc.newStub(managedChannel);
     }
 
     @Test
@@ -87,7 +86,7 @@ public class BankClientTest {
                 .setAccountNumber(accountNumber)
                 .setAmount(amountToBeWithdrawn)
                 .build();
-        asyncBlockingStub.withdraw(withdrawRequest, new MoneyResponseObserver(countDownLatch));
+        asyncStub.withdraw(withdrawRequest, new MoneyResponseObserver(countDownLatch));
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
@@ -99,8 +98,8 @@ public class BankClientTest {
     @Test
     public void depositStreamTest() {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        StreamObserver<DepositRequest> depositStreamObserver = asyncBlockingStub.deposit(
-                new BalanceStreamObserver(countDownLatch)
+        StreamObserver<DepositRequest> depositStreamObserver = asyncStub.deposit(
+                new BalanceResponseObserver(countDownLatch)
         );
         for (int i = 0; i < 100; ++i) {
             DepositRequest depositRequest = DepositRequest.newBuilder()

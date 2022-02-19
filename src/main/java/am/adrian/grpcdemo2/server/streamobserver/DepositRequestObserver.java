@@ -7,7 +7,7 @@ import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DepositRequestObserver implements StreamObserver<DepositRequest> {
+public class DepositRequestObserver implements StreamObserver<am.adrian.grpcdemo2.model.DepositRequest> {
 
     private final AccountDatabase database;
 
@@ -16,7 +16,7 @@ public class DepositRequestObserver implements StreamObserver<DepositRequest> {
     private int balance;
 
     @Override
-    public void onNext(DepositRequest request) {
+    public void onNext(am.adrian.grpcdemo2.model.DepositRequest request) {
         String account = request.getAccountNumber();
         int amount = request.getAmount();
         balance = database.increaseBalance(account, amount);

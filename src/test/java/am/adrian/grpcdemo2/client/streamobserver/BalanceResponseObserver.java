@@ -5,7 +5,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.CountDownLatch;
 
-public record BalanceStreamObserver(
+public record BalanceResponseObserver(
         CountDownLatch countDownLatch) implements StreamObserver<Balance> {
 
     @Override
@@ -15,6 +15,7 @@ public record BalanceStreamObserver(
 
     @Override
     public void onError(Throwable throwable) {
+        System.out.println(throwable.getMessage());
         countDownLatch.countDown();
     }
 

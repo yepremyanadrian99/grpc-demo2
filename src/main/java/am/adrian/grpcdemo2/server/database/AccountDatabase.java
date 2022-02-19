@@ -10,10 +10,10 @@ import java.util.stream.IntStream;
 @Component
 public class AccountDatabase {
 
-    private final Map<String, Integer> database = IntStream.range(1, 10)
+    private final Map<String, Integer> database = IntStream.range(1, 11)
             .boxed()
             .collect(Collectors.toMap(
-                    String::valueOf, value -> value * 100
+                    String::valueOf, value -> 100
             ));
 
     public Integer getBalance(String account) {
@@ -26,6 +26,10 @@ public class AccountDatabase {
 
     public Integer decreaseBalance(String account, Integer valueToDecrease) {
         return changeBalance(account, -valueToDecrease, Integer::sum);
+    }
+
+    public void printDatabase() {
+        System.out.println(database);
     }
 
     private Integer changeBalance(String account,

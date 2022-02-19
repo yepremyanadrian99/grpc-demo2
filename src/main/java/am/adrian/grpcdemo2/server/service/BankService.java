@@ -3,7 +3,6 @@ package am.adrian.grpcdemo2.server.service;
 import am.adrian.grpcdemo2.model.Balance;
 import am.adrian.grpcdemo2.model.BalanceCheckRequest;
 import am.adrian.grpcdemo2.model.BankServiceGrpc;
-import am.adrian.grpcdemo2.model.DepositRequest;
 import am.adrian.grpcdemo2.model.Money;
 import am.adrian.grpcdemo2.model.WithdrawRequest;
 import am.adrian.grpcdemo2.server.database.AccountDatabase;
@@ -63,7 +62,7 @@ public class BankService extends BankServiceGrpc.BankServiceImplBase {
     }
 
     @Override
-    public StreamObserver<DepositRequest> deposit(StreamObserver<Balance> responseObserver) {
+    public StreamObserver<am.adrian.grpcdemo2.model.DepositRequest> deposit(StreamObserver<Balance> responseObserver) {
         return new DepositRequestObserver(database, responseObserver);
     }
 
