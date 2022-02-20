@@ -1,7 +1,6 @@
 package am.adrian.grpcdemo2.server.streamobserver;
 
 import am.adrian.grpcdemo2.model.Balance;
-import am.adrian.grpcdemo2.model.DepositRequest;
 import am.adrian.grpcdemo2.server.database.AccountDatabase;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
